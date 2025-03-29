@@ -1,17 +1,15 @@
-# app.py
 import time
 import streamlit as st
 import pandas as pd
 from datetime import datetime
 from auth import login_form, register_form, logout_action
 from database import get_db_connection
-from operations import find_ques
+from operations import load_csv_from_s3, find_ques
 from spaced_repetition import spaced_repetition_view
 
 DB_CONFIG = st.secrets["db_config"]
 
 # Load CSS styling
-# st.markdown(get_css(), unsafe_allow_html=True)
 
 def run_app():
     topics = ["Array", "String", "Hash Table", "Dynamic Programming", "Math", "Sorting", "Greedy", "Depth-First Search",
@@ -27,12 +25,14 @@ def run_app():
               "Minimum Spanning Tree", "Shell", "Reservoir Sampling", "Strongly Connected Component",
               "Eulerian Circuit", "Radix Sort", "Rejection Sampling", "Biconnected Component", "Collapse"]
 
+    df = load_csv_from_s3()
     if "logged_in" not in st.session_state:
         st.session_state["logged_in"] = False
 
     if not st.session_state["logged_in"]:
         st.markdown('<h1 class="header">Leetcode Tracker</h1>', unsafe_allow_html=True)
-        st.sidebar.markdown('<h1 class="header" style="text-align: center;">Leetcode Tracker</h1>', unsafe_allow_html=True)
+        st.sidebar.markdown('<h1 class="header" style="text-align: center; font-size: 4rem;">🚀</h1>', unsafe_allow_html=True)
+
         auth_mode = st.sidebar.radio("Select Mode:", ("Login", "Register"), key="auth_mode")
         if auth_mode == "Login":
             login_form()
@@ -40,7 +40,8 @@ def run_app():
             register_form()
     else:
         st.markdown('<h1 class="header">Leetcode Tracker</h1>', unsafe_allow_html=True)
-        st.sidebar.markdown('<h1 class="header" style="text-align: center;">Leetcode Tracker</h1>', unsafe_allow_html=True)
+        st.sidebar.markdown('<h1 class="header" style="text-align: center; font-size: 4rem;">🚀</h1>', unsafe_allow_html=True)
+
         st.sidebar.markdown(
             f"<p style='text-align: center; color: #ff6f61;'>Logged in as: <strong>{st.session_state['username']}</strong></p>",
             unsafe_allow_html=True
@@ -84,7 +85,7 @@ def run_app():
                             conn.close()
                         else:
                             # If not existing, insert the question
-                            slug, description, extra = find_ques(int(number))
+                            slug, description, extra = find_ques(int(number), df)
                             next_review_date = datetime.now().date() + pd.Timedelta(days=2)
                             with conn.cursor() as cursor:
                                 cursor.execute("""

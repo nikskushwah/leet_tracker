@@ -19,11 +19,9 @@ def load_csv_from_s3():
     
     return pd.read_csv(StringIO(csv_string))
 
-df = load_csv_from_s3()
-
-def find_ques(number):
+def find_ques(number, df):
     x = df[df['frontendQuestionId'] == number]
-    question_slug = x[["titleSlug"]].iloc[0][0]
-    difficulty = x[["difficulty"]].iloc[0][0]
-    topics = x[["topicNames"]].iloc[0][0]
+    question_slug = x["titleSlug"].iloc[0]
+    difficulty = x["difficulty"].iloc[0]
+    topics = x["topicNames"].iloc[0]
     return [question_slug, difficulty, topics]
