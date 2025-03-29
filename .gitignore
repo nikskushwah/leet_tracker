@@ -9,3 +9,8 @@ output.csv
 find_question.ipynb
 ai
 __pycache__
+utils
+config.py
+.streamlit
+.ipynb_checkpoints
+anaconda_projects
