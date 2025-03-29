@@ -1,14 +1,14 @@
 import streamlit as st
-from scrape import scrape_website
-from operations import find_ques
+from styles import get_css
+from database import ensure_database
+from app import run_app
 
-st.title("AI Web Scraper")
-number = st.text_input("Leetcode question number:")
+st.set_page_config(page_title="Leetcode Tracker", layout="wide", initial_sidebar_state="expanded")
+# Load CSS immediately after setting page config.
+st.markdown(get_css(), unsafe_allow_html=True)
 
-if st.button("Enter"):
-    st.write("Entering into database")
-    result = find_ques(int(number))
+# Optionally ensure the database exists.
+ensure_database()
 
-    st.write(f"https://leetcode.com/problems/{result[0]}/description/")
-    st.write(f"{result[1]}")
-    st.write(f"{result[2]}")
+# Launch the app.
+run_app()
